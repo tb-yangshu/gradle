@@ -27,7 +27,9 @@ import org.gradle.api.tasks.TaskAction
 import java.io.BufferedOutputStream
 import java.io.File
 import java.io.FileOutputStream
+import java.nio.file.Files
 import java.nio.file.Path
+import java.nio.file.StandardCopyOption
 import java.util.*
 import java.util.jar.JarFile
 import java.util.jar.JarOutputStream
@@ -81,7 +83,8 @@ open class ShadedJar : DefaultTask() {
             }
         }
 
-        JarOutputStream(BufferedOutputStream(FileOutputStream(jarFile.get().asFile))).use { jarOutputStream ->
+        val outputFile = jarFile.get().asFile
+        JarOutputStream(BufferedOutputStream(FileOutputStream(outputFile))).use { jarOutputStream ->
             if (!manifests.isEmpty) {
                 jarOutputStream.addJarEntry(JarFile.MANIFEST_NAME, manifests.first())
             }
@@ -97,6 +100,11 @@ open class ShadedJar : DefaultTask() {
                 }
             }
         }
+
+        // Copy the jar in a temporary dir for later inspection
+        val tempFile = Files.createTempFile("shaded-", ".jar")
+        println("Backing up shaded.jar to ${tempFile.toAbsolutePath()}")
+        Files.copy(outputFile.toPath(), tempFile, StandardCopyOption.REPLACE_EXISTING)
     }
 
     private
