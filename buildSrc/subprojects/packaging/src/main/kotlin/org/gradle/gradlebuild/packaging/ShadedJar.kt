@@ -101,10 +101,16 @@ open class ShadedJar : DefaultTask() {
             }
         }
 
-        // Copy the jar in a temporary dir for later inspection - subprojects/*/build/test-results-*.zip is archived by TC
-        val tempFile = project.buildDir.resolve("test-results-shaded-${System.nanoTime()}.jar.zip").toPath()
-        println("Backing up shaded.jar to ${tempFile.toAbsolutePath()}")
-        Files.copy(outputFile.toPath(), tempFile, StandardCopyOption.REPLACE_EXISTING)
+        // Copy the jar in a temporary dir for later inspection
+        val baseFileName = "shaded-${System.nanoTime()}.jar"
+        // subprojects/*/build/test-results-*.zip is archived by for performance tests
+        val tempFilePerformanceTests = project.buildDir.resolve("test-results-$baseFileName.zip").toPath()
+        // build/report-* is archived by for integration tests
+        val tempFileForTest = project.rootProject.buildDir.resolve("report-$baseFileName").toPath()
+        println("Backing up shaded.jar to ${tempFilePerformanceTests.toAbsolutePath()}")
+        Files.copy(outputFile.toPath(), tempFilePerformanceTests, StandardCopyOption.REPLACE_EXISTING)
+        println("Backing up shaded.jar to ${tempFileForTest.toAbsolutePath()}")
+        Files.copy(outputFile.toPath(), tempFileForTest, StandardCopyOption.REPLACE_EXISTING)
     }
 
     private
