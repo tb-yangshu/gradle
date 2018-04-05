@@ -101,8 +101,8 @@ open class ShadedJar : DefaultTask() {
             }
         }
 
-        // Copy the jar in a temporary dir for later inspection
-        val tempFile = Files.createTempFile("shaded-", ".jar")
+        // Copy the jar in a temporary dir for later inspection - subprojects/*/build/test-results-*.zip is archived by TC
+        val tempFile = project.buildDir.resolve("test-results-shaded-${System.nanoTime()}.jar.zip").toPath()
         println("Backing up shaded.jar to ${tempFile.toAbsolutePath()}")
         Files.copy(outputFile.toPath(), tempFile, StandardCopyOption.REPLACE_EXISTING)
     }
