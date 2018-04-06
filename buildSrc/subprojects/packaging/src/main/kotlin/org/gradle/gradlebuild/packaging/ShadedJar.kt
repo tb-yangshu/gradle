@@ -94,7 +94,8 @@ open class ShadedJar : DefaultTask() {
         }
 
         // Copy the jar in a temporary dir for later inspection
-        val baseFileName = "shaded-${System.nanoTime()}.jar"
+        val prefix = "shaded-${System.nanoTime()}"
+        val baseFileName = "$prefix.jar"
         // subprojects/*/build/test-results-*.zip is archived by for performance tests
         val tempFilePerformanceTests = project.buildDir.resolve("test-results-$baseFileName.zip").toPath()
         // build/report-* is archived by for integration tests
@@ -103,6 +104,18 @@ open class ShadedJar : DefaultTask() {
         Files.copy(outputFile.toPath(), tempFilePerformanceTests, StandardCopyOption.REPLACE_EXISTING)
         println("Backing up shaded.jar to ${tempFileForTest.toAbsolutePath()}")
         Files.copy(outputFile.toPath(), tempFileForTest, StandardCopyOption.REPLACE_EXISTING)
+
+        writeJson(project.buildDir.resolve("tmp/$prefix-entryPoints/log.txt"), entryPoints)
+        writeJson(project.buildDir.resolve("tmp/$prefix-classTrees/log.txt"), classTrees)
+    }
+
+    private
+    fun writeJson(file: File, entryPoints: Any) {
+        file.parentFile.mkdirs()
+        println("Writing JSON to ${file.absolutePath}")
+        file.bufferedWriter().use {
+            Gson().toJson(entryPoints, it)
+        }
     }
 
     private
