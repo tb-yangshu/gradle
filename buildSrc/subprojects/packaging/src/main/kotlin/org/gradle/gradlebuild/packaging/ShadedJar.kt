@@ -75,6 +75,9 @@ open class ShadedJar : DefaultTask() {
             }
         }
 
+        val nonIncludedClasses = mutableSetOf<String>()
+        nonIncludedClasses.addAll(classesToInclude)
+
         val outputFile = jarFile.get().asFile
         JarOutputStream(BufferedOutputStream(FileOutputStream(outputFile))).use { jarOutputStream ->
             if (!manifests.isEmpty) {
@@ -89,8 +92,14 @@ open class ShadedJar : DefaultTask() {
                 }.forEach {
                     val relativePath = classesDirPath.relativePath(it)
                     jarOutputStream.addJarEntry(relativePath, it)
+                    nonIncludedClasses.remove(relativePath)
                 }
             }
+        }
+
+        if (nonIncludedClasses.isNotEmpty()) {
+            println("There were classes which should have been included in the Jar but where not included:")
+            nonIncludedClasses.forEach(::println)
         }
 
         // Copy the jar in a temporary dir for later inspection
