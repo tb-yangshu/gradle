@@ -85,6 +85,7 @@ open class ShadedJar : DefaultTask() {
             }
             jarOutputStream.addJarEntry("org/gradle/build-receipt.properties", buildReceiptFile.get().asFile)
             relocatedClassesConfiguration.files.forEach { classesDir ->
+                println("Examining classes of $classesDir")
                 val classesDirPath = classesDir.toPath()
                 classesDir.walk().filter {
                     val relativePath = classesDirPath.relativePath(it)
