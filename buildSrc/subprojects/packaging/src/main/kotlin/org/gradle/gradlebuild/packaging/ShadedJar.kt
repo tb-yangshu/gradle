@@ -101,6 +101,7 @@ open class ShadedJar : DefaultTask() {
             println("There were classes which should have been included in the Jar but where not included:")
             nonIncludedClasses.forEach(::println)
         }
+        println("Shaded jar should contain ServiceLocator: ${classesToInclude.contains("org/gradle/internal/service/ServiceLocator.class")}")
 
         // Copy the jar in a temporary dir for later inspection
         val prefix = "shaded-${System.nanoTime()}"
