@@ -16,7 +16,7 @@
 
 package org.gradle.gradlebuild.packaging
 
-import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import org.gradle.api.artifacts.transform.ArtifactTransform
 import java.io.File
 import javax.inject.Inject
@@ -51,12 +51,13 @@ open class ShadeClassesTransform @Inject constructor(
         val manifestFile = outputDirectory.resolve(manifestFileName)
 
         val classGraph = JarAnalyzer(shadowPackage, keepPackages, unshadedPackages, ignorePackages).analyze(input, classesDir, manifestFile)
+        val gson = GsonBuilder().setPrettyPrinting().create()
 
         outputDirectory.resolve(classTreeFileName).bufferedWriter().use {
-            Gson().toJson(classGraph.getDependencies(), it)
+            gson.toJson(classGraph.getDependencies().toSortedMap(), it)
         }
         outputDirectory.resolve(entryPointsFileName).bufferedWriter().use {
-            Gson().toJson(classGraph.entryPoints.map { it.outputClassFilename }, it)
+            gson.toJson(classGraph.entryPoints.map { it.outputClassFilename }.toSortedSet(), it)
         }
 
         return listOf(outputDirectory)

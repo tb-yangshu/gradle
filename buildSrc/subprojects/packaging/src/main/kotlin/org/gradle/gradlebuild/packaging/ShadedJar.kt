@@ -17,6 +17,7 @@
 package org.gradle.gradlebuild.packaging
 
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.RegularFileProperty
@@ -124,13 +125,14 @@ open class ShadedJar : DefaultTask() {
     fun writeJson(file: File, entryPoints: Any) {
         file.parentFile.mkdirs()
         println("Writing JSON to ${file.absolutePath}")
+        val gson = GsonBuilder().setPrettyPrinting().create()
         file.bufferedWriter().use {
-            Gson().toJson(entryPoints, it)
+            gson.toJson(entryPoints, it)
         }
     }
 
     private
-    fun readEntryPoints() = entryPointsConfiguration.files.flatMap { readJson<List<String>>(it) }
+    fun readEntryPoints() = entryPointsConfiguration.files.flatMap { readJson<List<String>>(it) }.toSortedSet()
 
     private
     fun readClassTrees() = classTreesConfiguration.files.map { readJson<Map<String, List<String>>>(it) }
@@ -150,10 +152,10 @@ internal
 fun buildClassTrees(individualClassTrees: List<Map<String, List<String>>>): Map<String, Set<String>> =
     individualClassTrees.flatMap { it.entries }
         .groupingBy { it.key }
-        .aggregate<Map.Entry<String, List<String>>, String, Set<String>> { _, accumulator: Set<String>?, element: Map.Entry<String, List<String>>, first ->
+        .aggregate<Map.Entry<String, List<String>>, String, SortedSet<String>> { _, accumulator: SortedSet<String>?, element: Map.Entry<String, List<String>>, first ->
             if (first) {
-                element.value.toSet()
+                element.value.toSortedSet()
             } else {
-                accumulator!!.union(element.value)
+                accumulator!!.union(element.value).toSortedSet()
             }
-        }
+        }.toSortedMap()

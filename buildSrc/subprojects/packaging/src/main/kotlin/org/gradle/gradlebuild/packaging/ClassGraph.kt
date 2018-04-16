@@ -46,7 +46,7 @@ class ClassGraph(
             }
         }
 
-    fun getDependencies() = classes.map { it.value.outputClassFilename to it.value.dependencies.map { it.outputClassFilename } }.toMap()
+    fun getDependencies() = classes.map { it.value.outputClassFilename to it.value.dependencies.map { it.outputClassFilename }.toSortedSet() }.toMap()
 }
 
 
