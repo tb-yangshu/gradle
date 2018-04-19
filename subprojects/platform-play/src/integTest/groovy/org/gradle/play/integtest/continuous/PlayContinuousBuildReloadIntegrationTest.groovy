@@ -24,13 +24,15 @@ import org.gradle.test.fixtures.ConcurrentTestUtil
  */
 class PlayContinuousBuildReloadIntegrationTest extends AbstractPlayReloadIntegrationTest {
 
+    private static final String PENDING_DETECTED_MESSAGE = 'Pending changes detected'
+
     int pendingChangesMarker
 
     def setup() {
         buildFile << """
                 def pendingChangesManager = gradle.services.get(${PendingChangesManager.canonicalName})
                 pendingChangesManager.addListener {
-                    println "Pending changes detected"
+                    println "$PENDING_DETECTED_MESSAGE"
                 }
         """
     }
@@ -39,7 +41,7 @@ class PlayContinuousBuildReloadIntegrationTest extends AbstractPlayReloadIntegra
         def buildOutput = ''
         ConcurrentTestUtil.poll {
             buildOutput = buildOutputSoFar()
-            assert buildOutput.substring(pendingChangesMarker).contains("Pending changes detected")
+            assert buildOutput.substring(pendingChangesMarker) ==~ /(?s).*${PENDING_DETECTED_MESSAGE}.*BUILD (FAILED|SUCCESSFUL) in.*/
         }
         pendingChangesMarker = buildOutput.length()
     }
