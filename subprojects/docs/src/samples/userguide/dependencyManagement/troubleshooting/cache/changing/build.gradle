@@ -2,13 +2,13 @@ apply plugin: 'java-library'
 
 repositories {
     mavenCentral()
-    maven {
-        url 'https://repo.spring.io/snapshot/'
-    }
 }
 
 dependencies {
-    implementation 'org.springframework:spring-web:5.0.3.BUILD-SNAPSHOT'
+    // The snippet is about configuring changing cache, no need to have a real changing module here
+    implementation('org.slf4j:slf4j-api:1.7.25') {
+        changing = true
+    }
 }
 
 //START SNIPPET changing-module-cache-control

@@ -29,17 +29,6 @@ class SamplesTroubleshootingDependencyResolutionIntegrationTest extends Abstract
     Sample sample = new Sample(testDirectoryProvider)
 
     @UsesSample("userguide/dependencyManagement/troubleshooting/cache/changing")
-    def "can declare custom TTL for dependency with dynamic version"() {
-        executer.inDirectory(sample.dir)
-
-        when:
-        succeeds(COPY_LIBS_TASK_NAME)
-
-        then:
-        sample.dir.file('build/libs/spring-web-5.0.3.BUILD-SNAPSHOT.jar').isFile()
-    }
-
-    @UsesSample("userguide/dependencyManagement/troubleshooting/cache/changing")
     def "can declare custom TTL for dependency with changing version"() {
         executer.inDirectory(sample.dir)
 
@@ -47,6 +36,17 @@ class SamplesTroubleshootingDependencyResolutionIntegrationTest extends Abstract
         succeeds(COPY_LIBS_TASK_NAME)
 
         then:
-        sample.dir.file('build/libs').listFiles().any { it.name.startsWith('spring-web-5.') }
+        sample.dir.file('build/libs/slf4j-api-1.7.25.jar').isFile()
+    }
+
+    @UsesSample("userguide/dependencyManagement/troubleshooting/cache/dynamic")
+    def "can declare custom TTL for dependency with dynamic version"() {
+        executer.inDirectory(sample.dir)
+
+        when:
+        succeeds(COPY_LIBS_TASK_NAME)
+
+        then:
+        sample.dir.file('build/libs').listFiles().any { it.name.startsWith('slf4j-api-1.7.') }
     }
 }
