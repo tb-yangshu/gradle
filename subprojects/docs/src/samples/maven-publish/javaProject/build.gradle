@@ -37,11 +37,18 @@ ext {
     snapshotsRepoUrl = "$buildDir/repos/snapshots"
 }
 
+// START SNIPPET repo-url-from-project-property
 publishing {
     repositories {
         maven {
+// END SNIPPET repo-url-from-variable
+            url project.hasProperty("release") ? releasesRepoUrl : snapshotsRepoUrl
+// END SNIPPET repo-url-from-project-property
+// START SNIPPET repo-url-from-variable
             url version.endsWith("SNAPSHOT") ? snapshotsRepoUrl : releasesRepoUrl
+// START SNIPPET repo-url-from-project-property
         }
     }
 }
+// END SNIPPET repo-url-from-project-property
 // END SNIPPET repo-url-from-variable
