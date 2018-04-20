@@ -27,14 +27,21 @@ publishing {
             }
         }
     }
-// END SNIPPET publish-custom-artifact
-    repositories {
-        maven {
-            url "$buildDir/repo" // change to point to your repo, e.g. http://my.org/repo
-        }
-    }
-// START SNIPPET publish-custom-artifact
 }
 // END SNIPPET publish-custom-artifact
 
+// START SNIPPET repo-url-from-variable
+ext {
+    // change to point to your repositories, e.g. http://my.org/repos/releases
+    releasesRepoUrl = "$buildDir/repos/releases"
+    snapshotsRepoUrl = "$buildDir/repos/snapshots"
+}
 
+publishing {
+    repositories {
+        maven {
+            url version.endsWith("SNAPSHOT") ? snapshotsRepoUrl : releasesRepoUrl
+        }
+    }
+}
+// END SNIPPET repo-url-from-variable
