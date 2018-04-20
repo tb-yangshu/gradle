@@ -33,6 +33,7 @@ class DefaultPluginManagerTest extends Specification {
     def classLoader = new GroovyClassLoader(getClass().classLoader)
     def classLoaderScope = Stub(ClassLoaderScope) {
         getLocalClassLoader() >> classLoader
+        getParent() >> { classLoaderScope }
     }
     def registry = new DefaultPluginRegistry(new PluginInspector(new ModelRuleSourceDetector()), classLoaderScope)
     def target = Mock(PluginTarget)

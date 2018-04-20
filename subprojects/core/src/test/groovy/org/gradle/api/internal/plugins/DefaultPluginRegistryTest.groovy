@@ -34,6 +34,7 @@ class DefaultPluginRegistryTest extends Specification {
     def classLoader = Mock(ClassLoader)
     def classLoaderScope = Stub(ClassLoaderScope) {
         getLocalClassLoader() >> classLoader
+        getParent() >> { classLoaderScope }
     }
     def pluginInspector = new PluginInspector(new ModelRuleSourceDetector())
     private DefaultPluginRegistry pluginRegistry = new DefaultPluginRegistry(pluginInspector, classLoaderScope)

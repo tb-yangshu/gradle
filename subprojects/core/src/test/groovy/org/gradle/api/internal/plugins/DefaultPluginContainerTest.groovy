@@ -274,8 +274,9 @@ public class DefaultPluginContainerTest extends Specification {
     }
 
     def scope(ClassLoader classLoader) {
-        return Stub(ClassLoaderScope) {
-            getLocalClassLoader() >> classLoader
+        Stub(ClassLoaderScope) { scope ->
+            scope.getLocalClassLoader() >> classLoader
+            scope.getParent() >> { scope }
         }
     }
 }
